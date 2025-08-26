@@ -1,0 +1,6 @@
+CREATE ROLE world_viewer;
+GRANT SELECT ON ALL TABLES IN SCHEMA world TO world_viewer;
+
+CREATE ROLE world_editor;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA world TO world_editor;
+

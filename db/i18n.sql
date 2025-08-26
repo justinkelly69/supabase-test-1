@@ -1,4 +1,4 @@
-INSERT INTO snaptrip_backend.continents (ct_id, ct_name)
+INSERT INTO world.continents (ct_id, ct_name)
 VALUES
 ('AF', 'Africa'),
 ('AN', 'Antarctica'),
@@ -8,7 +8,7 @@ VALUES
 ('OC', 'Oceania'),
 ('SA', 'South America');
 
-INSERT INTO snaptrip_backend.countries (co_id, co_continent_id, co_common_name, co_flag, co_tld, co_calling_codes, co_eu_member)
+INSERT INTO world.countries (co_id, co_continent_id, co_common_name, co_flag, co_tld, co_calling_codes, co_eu_member)
 VALUES
 ('ad', 'EU', 'Andorra', '🇦🇩', 'ad', '376', false),
 ('ae', 'AS', 'United Arab Emirates', '🇦🇪', 'ae', '971', false),
@@ -261,7 +261,7 @@ VALUES
 ('zm', 'AF', 'Zambia', '🇿🇲', 'zm', '260', false),
 ('zw', 'AF', 'Zimbabwe', '🇿🇼', 'zw', '263', false);
 
-INSERT INTO snaptrip_backend.languages (lg_id, lg_name)
+INSERT INTO world.languages (lg_id, lg_name)
 VALUES
 ('afr', 'Afrikaans'),
 ('amh', 'Amharic'),
@@ -420,7 +420,7 @@ VALUES
 ('zib', 'Zimbabwean Sign Language'),
 ('zul', 'Zulu');
 
-INSERT INTO snaptrip_backend.currencies (cu_id, cu_name)
+INSERT INTO world.currencies (cu_id, cu_name)
 VALUES
 ('AED', 'UAE Dirham'),
 ('AFN', 'Afghani'),
@@ -579,7 +579,7 @@ VALUES
 ('ZMW', 'Zambian Kwacha'),
 ('ZWL', 'Zimbabwe Dollar');
 
-INSERT INTO snaptrip_backend.country_languages (cl_country_id, cl_language_id)
+INSERT INTO world.country_languages (cl_country_id, cl_language_id)
 VALUES
 ('ad', 'cat'),
 ('ae', 'ara'),
@@ -998,7 +998,7 @@ VALUES
 ('zw', 'xho'),
 ('zw', 'zib');
 
-INSERT INTO snaptrip_backend.country_currencies (cc_country_id, cc_currency_id)
+INSERT INTO world.country_currencies (cc_country_id, cc_currency_id)
 VALUES
 ('ad', 'EUR'),
 ('ae', 'AED'),
