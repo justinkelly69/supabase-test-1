@@ -6,12 +6,14 @@ DROP TABLE IF EXISTS world.countries;
 
 CREATE TABLE
     IF NOT EXISTS world.countries (
-        "id" CHAR(2) NOT NULL PRIMARY KEY,
-        "enabled" BOOLEAN NOT NULL DEFAULT FALSE
+        "id" SERIAL PRIMARY KEY,
+        "country" CHAR(2) NOT NULL UNIQUE,
+        "enabled" BOOLEAN NOT NULL DEFAULT FALSE,
+        CONSTRAINT "fk_countries" FOREIGN KEY ("country") REFERENCES iso.countries ("id")
     );
 
 INSERT INTO
-    world.countries (id)
+    world.countries (country)
 SELECT
     "id"
 FROM
@@ -19,26 +21,27 @@ FROM
 ORDER BY
     "name";
 
-DROP VIEW IF EXISTS world.country_list;
+DROP VIEW IF EXISTS public.country_list;
 
 CREATE VIEW
-    world.country_list AS
+    public.country_list AS
 SELECT
     co."id",
     co."continent",
     co."name",
     co."flag",
     co."is_eu",
-    co."enabled"
+    wc."enabled"
 FROM
     iso.countries co
+    LEFT JOIN world.countries wc ON wc."country" = co."id"
 ORDER BY
     co."name";
 
-DROP VIEW IF EXISTS world.country_details;
+DROP VIEW IF EXISTS public.country_details;
 
 CREATE VIEW
-    world.country_details AS
+    public.country_details AS
 SELECT
     co."id",
     co."continent",
@@ -47,7 +50,7 @@ SELECT
     co."tld",
     co."prefix",
     co."is_eu",
-    co."enabled",
+    wc."enabled",
     JSON_AGG (
         json_build_object (
             'id',
@@ -67,8 +70,10 @@ FROM
     LEFT JOIN iso.languages lg ON cl."language" = lg."id"
     LEFT JOIN iso.country_currencies cc ON co."id" = cc."country"
     LEFT JOIN iso.currencies cu ON cc."currency" = cu."id"
+    LEFT JOIN world.countries wc ON wc."country" = co."id"
 GROUP BY
     co."id",
-    co."continent"
+    co."continent",
+    wc."enabled"
 ORDER BY
     co."name";

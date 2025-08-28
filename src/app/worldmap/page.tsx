@@ -9,30 +9,29 @@ export default function Page() {
     const supabase = createClient()
 
     useEffect(() => {
-    const getData = async () => {
-        try {
-            const { data, error } = await supabase.from('countries').select('co_id, co_continent_id, co_common_name, co_flag, co_tld, co_calling_codes, co_eu_member')
-            if (error) {
-                console.error('Error fetching countries:', error)
-                return
+        const getData = async () => {
+            try {
+                const { data, error } = await supabase.from('country_list').select('id, continent, name, flag, is_eu, enabled')
+                if (error) {
+                    console.error('Error fetching countries:', error)
+                    return
+                }
+                setCountries(
+                    (data ?? []).map((item: any) => ({
+                        id: item.id,
+                        continent: item.continent,
+                        name: item.name,
+                        flag: item.flag,
+                        is_eu: item.is_eu,
+                        enabled: item.enabled,
+                    }))
+                )
+            } catch (err) {
+                console.error('Failed to fetch countries:', err)
             }
-            setCountries(
-                (data ?? []).map((item: any) => ({
-                    id: item.co_id,
-                    continent_id: item.co_continent_id,
-                    common_name: item.co_common_name,
-                    flag: item.co_flag,
-                    tld: item.co_tld,
-                    calling_codes: item.co_calling_codes,
-                    eu_member: item.co_eu_member,
-                }))
-            )
-        } catch (err) {
-            console.error('Failed to fetch countries:', err)
         }
-    }
-    getData()
-}, [])
+        getData()
+    }, [])
 
     return <CountriesTable countries={countries} />
 }

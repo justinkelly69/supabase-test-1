@@ -19,7 +19,7 @@ CREATE TABLE
         "tld" CHAR(2) NOT NULL,
         "prefix" VARCHAR(100) NOT NULL,
         "is_eu" BOOLEAN NOT NULL DEFAULT FALSE,
-        enabled BOOLEAN NOT NULL DEFAULT FALSE,
+        "enabled" BOOLEAN NOT NULL DEFAULT FALSE,
         CONSTRAINT "fk_continent" FOREIGN KEY ("continent") REFERENCES iso.continents ("id")
     );
 
