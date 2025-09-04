@@ -2,7 +2,7 @@
 
 import { createClient } from '@/utils/supabase/client'
 import { useEffect, useState } from 'react'
-import { Country, CountriesTable } from './pagetable'
+import { Country, CountriesPage } from '@/components/world/countries'
 
 export default function Page() {
     const [countries, setCountries] = useState<Country[]>([])
@@ -16,12 +16,16 @@ export default function Page() {
                     console.error('Error fetching countries:', error)
                     return
                 }
+                console.log(JSON.stringify(data, null, 4))
                 setCountries(
-                    (data ?? []).map((item: any) => ({
+                    (data ?? []).map((item: any, index: number) => ({
+                        index: index,
                         id: item.id,
                         continent: item.continent,
                         name: item.name,
                         flag: item.flag,
+                        tld: item.tld,
+                        prefix: item.prefix,
                         is_eu: item.is_eu,
                         enabled: item.enabled,
                     }))
@@ -33,5 +37,5 @@ export default function Page() {
         getData()
     }, [])
 
-    return <CountriesTable countries={countries} />
+    return (<CountriesPage countries={countries} />)
 }
