@@ -11,108 +11,106 @@ export type Country = {
     prefix: string;
     is_eu: boolean;
     enabled: boolean;
+    changed: boolean;
 };
 
 export const CountriesPage = (props: {
-    countries: Country[]
+    countries: Country[],
+    setCountries: Function,
 }) => {
-    const [countriesEnabled, setCountriesEnabled] = useState<{ [id: string]: boolean }>({})
-    const [countryId, setCountryId] = useState<string>('');
+
+    //const [countryId, setCountryId] = useState<string>('');
     const [countryIndex, setCountryIndex] = useState(-1)
 
-console.log('props.countries 1', JSON.stringify(props.countries, null, 4))
-
-    useEffect(() => {
-        const countries: { [id: string]: boolean } = {}
-        console.log('props.countries 2', JSON.stringify(props.countries, null, 4))
-        for (const country of props.countries) {
-            countries[country.id] = country.enabled
-            console.log(countries[country.id], country.enabled)
-        }
-        setCountriesEnabled(countries)
-        console.log('countries enabled')
-    }, [])
-
+    //console.log('countries 0', props.countries)
 
     return countryIndex < 0 ?
         <CountriesTable
             countries={props.countries}
-            countriesEnabled={countriesEnabled}
-            setCountriesEnabled={setCountriesEnabled}
-            setCountryId={setCountryId}
+            setCountries={props.setCountries}
             setCountryIndex={setCountryIndex}
         />
         :
         <CountryDetail
             country={props.countries[countryIndex]}
-            setCountriesEnabled={setCountriesEnabled}
             setCountryIndex={setCountryIndex}
         />
 }
 
 const CountriesTable = (props: {
     countries: Country[],
-    countriesEnabled: { [id: string]: boolean },
-    setCountriesEnabled: Function,
-    setCountryId: Function,
+    setCountries: Function,
     setCountryIndex: Function,
 }) => {
+    console.clear()
+    console.log('countries', JSON.stringify(props.countries, null, 4))
+
     return (
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Continent</th>
-                    <th>Name</th>
-                    <th>Flag</th>
-                    <th>EU Member</th>
-                    <th>Enabled</th>
-                    <th>Details</th>
-                </tr>
-            </thead>
-            <tbody>
-                {props.countries.map((country, index) =>
-                    <CountryRow
-                        key={country.id}
-                        setCountryIndex={props.setCountryIndex}
-                        country={country}
-                        countriesEnabled={props.countriesEnabled}
-                        setCountriesEnabled={props.setCountriesEnabled}
-                    />
-                )}
-            </tbody>
-        </table>
+        <main>
+            <ul className="top-panel">
+                <li>
+                    <button>Save</button>
+                </li>
+            </ul>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Continent</th>
+                        <th>Name</th>
+                        <th>Flag</th>
+                        <th>EU Member</th>
+                        <th>Enabled</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {props.countries.map((country, index) =>
+                        <CountryRow
+                            key={country.id}
+                            index={index}
+                            setCountryIndex={props.setCountryIndex}
+                            countries={props.countries}
+                            setCountries={props.setCountries}
+                        />
+                    )}
+                </tbody>
+            </table>
+        </main>
     );
 }
 
 const CountryRow = (props: {
+    index: number,
     setCountryIndex: Function,
-    country: Country,
-    countriesEnabled: { [id: string]: boolean },
-    setCountriesEnabled: Function,
+    countries: Country[],
+    setCountries: Function,
 }) => {
+    const country = props.countries[props.index]
     return (
         <tr>
-            <td>{props.country.id}</td>
-            <td>{props.country.continent}</td>
-            <td>{props.country.name}</td>
-            <td>{props.country.flag}</td>
-            <td>{props.country.is_eu ? 'Yes' : 'No'}</td>
+            <td>{country.id}</td>
+            <td>{country.continent}</td>
+            <td>{country.name}</td>
+            <td>{country.flag}</td>
+            <td>{country.is_eu ? 'Yes' : 'No'}</td>
             <td>
                 <input type="checkbox"
-                    id={props.country.id}
-                    name={props.country.id}
+                    id={country.id}
+                    name={country.id}
                     onChange={(e) => {
-                        props.setCountriesEnabled({
-                            ...props.countriesEnabled,
-                            [props.country.id]: e.target.checked
-                        })
-                        console.log('countriesEnabled:', JSON.stringify(props.countriesEnabled, null, 4));
+                        props.setCountries(
+                            checkCountry(
+                                props.countries,
+                                props.index,
+                                e.target.checked
+                            )
+                        )
                     }}
                 />
             </td>
             <td>
-                <button onClick={e => props.setCountryIndex(props.country.index)}>Select</button>
+                <button onClick={e => props.setCountryIndex(props.index)}>Select</button>
             </td>
         </tr>
     );
@@ -120,10 +118,8 @@ const CountryRow = (props: {
 
 const CountryDetail = (props: {
     country: Country,
-    setCountriesEnabled: Function,
     setCountryIndex: Function,
 }) => {
-    //console.log('props.country', JSON.stringify(country, null, 4));
     return (
         <div>
             <h2>{props.country.name} Details</h2>
@@ -136,4 +132,31 @@ const CountryDetail = (props: {
             <button onClick={e => props.setCountryIndex(-1)}>Back to list</button>
         </div>
     );
+}
+
+const checkCountry = (countries: Country[], index: number, checked: boolean) => {
+    const co: Country[] = []
+
+    for (let i = 0; i < countries.length; i++) {
+        const c = countries[i]
+        let isChecked = c.changed
+
+        if (index === i) {
+            isChecked = checked
+        }
+
+        co.push({
+            index: index,
+            id: c.id,
+            continent: c.continent,
+            name: c.name,
+            flag: c.flag,
+            tld: c.tld,
+            prefix: c.prefix,
+            is_eu: c.is_eu,
+            enabled: c.enabled,
+            changed: isChecked
+        })
+    }
+    return co
 }
