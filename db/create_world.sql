@@ -21,6 +21,8 @@ FROM
 ORDER BY
     "name";
 
+GRANT SELECT, INSERT, UPDATE, DELETE ON world.countries TO public;
+
 DROP VIEW IF EXISTS public.country_list;
 
 CREATE VIEW
@@ -77,3 +79,34 @@ GROUP BY
     wc."enabled"
 ORDER BY
     co."name";
+
+DROP FUNCTION update_selected_countries;
+
+DROP TYPE ENABLED_COUNTRY;
+CREATE TYPE ENABLED_COUNTRY AS (id CHAR(2), checked BOOLEAN);
+
+CREATE OR REPLACE PROCEDURE update_selected_countries(enabled_countries jsonb)
+AS $$
+DECLARE
+    ec json;
+BEGIN
+    FOR ec IN SELECT jsonb_array_elements(enabled_countries) LOOP
+        UPDATE world.countries SET "enabled" = (ec->>'checked')::BOOLEAN
+        WHERE country = (ec->>'id')::CHAR(2);
+    END LOOP;
+    RETURN;
+END;
+$$
+LANGUAGE plpgsql;
+
+/* CREATE FUNCTION update_data(p_json jsonb)
+RETURNS void AS $$
+DECLARE
+  json_item json;
+BEGIN
+  FOR json_item IN SELECT jsonb_array_elements(p_json) LOOP
+    UPDATE data_table SET data_text_column = (json_item->>'data_text')::text
+      WHERE data_int_column = (json_item->>'data_int')::integer;
+  END LOOP;
+END;
+$$ LANGUAGE SQL IMMUTABLE; */

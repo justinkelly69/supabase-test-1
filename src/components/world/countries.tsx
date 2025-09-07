@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { json } from "stream/consumers";
+import { createClient } from '@/utils/supabase/client'
+const supabase = createClient()
 
 export type Country = {
     index: number;
@@ -49,7 +50,10 @@ const CountriesTable = (props: {
         <main>
             <ul className="top-panel">
                 <li>
-                    <button>Save</button>
+                    <button onClick={async () => {
+                        const enabledCountries = sendCountries(props.countries)
+                        const { data, error } = await supabase.rpc('update_selected_countries1', {enabled_countries:[enabledCountries]})
+                    }}>Save</button>
                 </li>
             </ul>
             <table>
@@ -110,7 +114,9 @@ const CountryRow = (props: {
                 />
             </td>
             <td>
-                <button onClick={e => props.setCountryIndex(props.index)}>Select</button>
+                <button onClick={e =>
+                    props.setCountryIndex(props.index)
+                }>Select</button>
             </td>
         </tr>
     );
@@ -134,7 +140,20 @@ const CountryDetail = (props: {
     );
 }
 
-const checkCountry = (countries: Country[], index: number, checked: boolean) => {
+const sendCountries = (countries: Country[]):string => {
+    const out: [string, boolean][] = []
+
+    for (let i = 0; i < countries.length; i++) {
+        const c = countries[i]
+
+        if (c.enabled !== c.changed) {
+            out.push( [c.id , c.changed] )
+        }
+    }
+    return JSON.stringify(out)
+}
+
+const checkCountry = (countries: Country[], index: number, checked: boolean): Country[] => {
     const co: Country[] = []
 
     for (let i = 0; i < countries.length; i++) {

@@ -2,7 +2,7 @@
 
 import { createClient } from '@/utils/supabase/client'
 import { useEffect, useState } from 'react'
-import { Country, CountryEnabled, CountriesPage } from '@/components/world/countries'
+import { Country, CountriesPage } from '@/components/world/countries'
 
 export default function Page() {
     const [countries, setCountries] = useState<Country[]>([])
